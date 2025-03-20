@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>吃货球球</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-black text-white overflow-hidden m-0 p-0 h-screen flex flex-col">
+    <!-- Auth Modal -->
+    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden">
+        <div class="bg-[#111] border border-gray-700 rounded-xl p-8 max-w-md w-full shadow-xl">
+            <h2 id="authTitle" class="text-2xl font-semibold mb-6 text-center">注册</h2>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1" for="username">用户名</label>
+                <input type="text" id="username" class="w-full bg-[#222] border border-gray-600 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent">
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-1" for="password">密码</label>
+                <input type="password" id="password" class="w-full bg-[#222] border border-gray-600 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent">
+            </div>
+            <div class="flex flex-col gap-3">
+                <button id="authSubmitBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-medium py-2.5 px-4 rounded-lg transition">注册</button>
+                <button id="authSwitchBtn" class="text-sm text-gray-400 hover:text-white">已有账号？登录</button>
+                <button id="authCloseBtn" class="text-sm text-gray-400 hover:text-white mt-2">取消</button>
+            </div>
+            <p id="authMessage" class="mt-4 text-center text-sm text-red-500 hidden"></p>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden">
+        <div class="bg-[#111] border border-gray-700 rounded-xl p-8 max-w-md w-full shadow-xl">
+            <h2 class="text-2xl font-bold mb-2 text-center">游戏结束</h2>
+            <p class="text-center mb-4">你的得分：<span id="finalScore" class="font-bold text-amber-400 text-xl">0</span> 秒</p>
+            <div id="gameOverMessage" class="text-center mb-6 text-gray-300"></div>
+            <div class="flex flex-col gap-3">
+                <button id="playAgainBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-medium py-2.5 px-4 rounded-lg transition">再玩一次</button>
+                <button id="submitScoreBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-4 rounded-lg transition">提交分数</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboardModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden">
+        <div class="bg-[#111] border border-gray-700 rounded-xl p-8 max-w-md w-full shadow-xl">
+            <h2 class="text-2xl font-bold mb-6 text-center">排行榜</h2>
+            <div class="overflow-y-auto max-h-96">
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="py-2 text-left">排名</th>
+                            <th class="py-2 text-left">用户</th>
+                            <th class="py-2 text-right">得分（秒）</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardList" class="divide-y divide-gray-800">
+                        <!-- Leaderboard entries will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <button id="closeLeaderboardBtn" class="mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2.5 px-4 rounded-lg transition">关闭</button>
+        </div>
+    </div>
+
+    <!-- Game header -->
+    <header class="px-4 py-3 bg-[#111] border-b border-gray-800 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <h1 class="text-xl font-bold text-amber-400">吃货球球</h1>
+            <div id="gameStats" class="hidden">
+                <span class="text-sm text-gray-400 mr-4">倒计时: <span id="timerDisplay" class="text-white font-medium">0</span></span>
+                <span class="text-sm text-gray-400">体型值: <span id="sizeDisplay" class="text-white font-medium">0</span></span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button id="leaderboardBtn" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition">排行榜</button>
+            <button id="authBtn" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-black text-sm font-medium rounded transition">注册/登录</button>
+            <button id="logoutBtn" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded transition hidden">退出</button>
+        </div>
+    </header>
+    
+    <!-- Game container -->
+    <main class="flex-grow relative overflow-hidden">
+        <div class="absolute inset-0 flex items-center justify-center">
+            <button id="startGameBtn" class="bg-amber-500 hover:bg-amber-600 text-black px-8 py-4 rounded-xl font-bold text-xl shadow-lg transform transition hover:scale-105">开始游戏</button>
+        </div>
+        <canvas id="gameCanvas" class="w-full h-full"></canvas>
+    </main>
+
+    <footer class="py-2 px-4 text-center text-gray-500 text-xs bg-[#111] border-t border-gray-800">
+        Built with <a href="https://www.douyin.com/user/MS4wLjABAAAAGJH87fEi_UuZaZ_CH5TQcgQT_rB41uKAXc_OYgrhJgeqU5ss3ri7F-jFaH7Niija?from_tab_name=main&is_search=0&list_name=fans&nt=0" target="_blank" class="text-blue-400 hover:text-blue-300">让我康康</a>.
+    </footer>
+
+    <script src="game.js"></script>
+    <script src="auth.js"></script>
+    <script src="leaderboard.js"></script>
+    <script src="effects.js"></script>
+    <script src="audio.js"></script>
+    <script src="particles.js"></script>
+    <script>
+        // Prevent zooming
+        window.addEventListener("wheel", (e)=> {
+            const isPinching = e.ctrlKey
+            if(isPinching) e.preventDefault()
+        }, { passive: false })
+    </script>
+</body>
+</html>
